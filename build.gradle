@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+}
+group 'ch.joro.kudo'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://maven.springframework.org/release"
+    }
+    maven {
+        url "https://clojars.org/repo/"
+    }
+    google()
+
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    compile 'org.ode4j:core:0.4.0'
+    implementation group: 'org.lwjgl', name: 'lwjgl-util', version: '2.7.1'
+    implementation 'org.lwjgl:lwjgl:2.7.1'
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+application {
+    mainClassName = 'ch.joro.kudo.rgamebru.Main'
+}
+javafx {
+
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.media', 'javafx.graphics']
+
+}
+run {
+    jvmArgs = [
+            '--add-opens=javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED'
+
+    ]
+}
