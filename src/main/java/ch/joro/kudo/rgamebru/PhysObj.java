@@ -55,8 +55,11 @@ public class PhysObj {
 		
 		pivot.set(tmpQuat);
 		pivot.setPosition(pos.get0(),pos.get1(),pos.get2());
+		dostuff();
 	}
-	
+	public void dostuff() {
+
+	}
 	public void setMaterial(Material mat) {
 		shape.setMaterial(mat);
 	}

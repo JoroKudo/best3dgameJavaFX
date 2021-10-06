@@ -19,7 +19,14 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 
 
+import org.ode4j.math.DMatrix3;
+import org.ode4j.math.DMatrix3C;
+import org.ode4j.math.DVector3;
+import org.ode4j.math.DVector3C;
 import org.ode4j.ode.*;
+import org.ode4j.ode.internal.joints.DxJoint;
+import org.ode4j.ode.internal.joints.DxJointUniversal;
+import org.ode4j.ode.internal.ragdoll.DxRagdollJointConfig;
 
 import static org.ode4j.ode.OdeMath.*;
 
@@ -50,7 +57,7 @@ public class Main extends Application {
     Material bxmat = PhongPhactory.fromImage("floor.jpg");
     Material sphereMat = PhongPhactory.fromImage("bol.jpg");
     Material cylinderMat = PhongPhactory.fromImage("cylinder.jpg");
-    private PhysObj boy;
+    public static PhysBoy boy;
 
     private double lastMouseX, lastMouseY, mouseX, mouseY;
     private double camXa = 20, camYa = 345;
@@ -88,6 +95,7 @@ public class Main extends Application {
         OdeHelper.initODE2(0);
 
         world = OdeHelper.createWorld();
+
         world.setGravity(0, 9.8, 0);
         world.setQuickStepNumIterations(24);
 
@@ -181,19 +189,24 @@ public class Main extends Application {
         scene.setOnKeyReleased(this::keyUp);
         scene.setOnMouseDragged(this::mouseDrag);
         scene.setOnMousePressed(this::mousePressed);
-        boy = new PhysBox(2,4,2);
-        boy.setMaterial(sphereMat);
-        boy.body.setPosition(2, 0, 2);
 
+        boy = new PhysBoy(2,4,2);
+        boy.setMaterial(sphereMat);
+        boy.body.setPosition(2, -4, 2);
         objects.add(boy);
-        PhysObj obj2;
+
+
+
+
+
+        /*PhysObj obj2;
         obj2 = new PhysBox(1000, 1000, 5);
         obj2.setMaterial(boxMat);
 
 
         obj2.body.setPosition(0, -1000, 0);
 
-        objects.add(obj2);
+        objects.add(obj2);*/
 
         /*makeColumn(0, 0);
         makeColumn(-2, -2);
@@ -249,7 +262,7 @@ public class Main extends Application {
 
     public void update() {
 
-        camera.setEularRotation(camXa, -camYa, 0);
+    camera.setEularRotation(camXa, -camYa, 0);
         fwd.set(0, 0, 0);
         camera.setPosition(boy.body.getPosition().get0(), -7, boy.body.getPosition().get2() - 15);
 
@@ -288,8 +301,10 @@ public class Main extends Application {
         if (keys[KeyCode.W.ordinal()])
             boy.body.setLinearVel(boy.body.getLinearVel().get0(), boy.body.getLinearVel().get1(), boy.body.getLinearVel().get2() + 1);
 
-        if (keys[KeyCode.A.ordinal()])
-            boy.body.setLinearVel(boy.body.getLinearVel().get0() - 1, boy.body.getLinearVel().get1(), boy.body.getLinearVel().get2());
+        if (keys[KeyCode.A.ordinal()]) {
+            boy.body.addForce(-400, 0, 0);
+        }
+       // boy.body.setLinearVel(boy.body.getLinearVel().get0() - 1, boy.body.getLinearVel().get1(), boy.body.getLinearVel().get2());
         if (keys[KeyCode.N.ordinal()])
             boy.body.setLinearVel(boy.body.getLinearVel().get0(), boy.body.getLinearVel().get1() - 1, boy.body.getLinearVel().get2());
         if (keys[KeyCode.S.ordinal()])
@@ -324,7 +339,12 @@ public class Main extends Application {
 
         for (int i = 0; i < numc; i++) {
             contacts.get(i).surface.mode = dContactApprox1;
-            contacts.get(i).surface.mu = 5;
+            if(o1 == boy.geom||o2 == boy.geom  ){
+                contacts.get(i).surface.mu = 0;
+            }else{
+                contacts.get(i).surface.mu = 5;
+            }
+
             DJoint c = OdeHelper.createContactJoint(world, contactgroup, contacts.get(i));//contact+i);
             c.attach(b1, b2);
         }
